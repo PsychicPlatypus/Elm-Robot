@@ -68,6 +68,7 @@ view model =
         , div []
             [ input [ type_ "Text", onInput SetX, value (String.fromInt model.x) ] []
             , input [ type_ "Text", onInput SetY, value (String.fromInt model.y) ] []
+            , input [ type_ "Text", value (Robot.directionToString model.facing) ] []
             , input [ type_ "Text", onInput SetCommands, value model.commands ] []
             ]
         , button [ onClick ButtonPressed ] [ text "Run" ]

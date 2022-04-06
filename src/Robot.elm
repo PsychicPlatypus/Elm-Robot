@@ -1,4 +1,4 @@
-module Robot exposing (Language(..), Model, init, run)
+module Robot exposing (Language(..), Model, directionToString, init, run)
 
 
 type alias Model =
@@ -33,6 +33,22 @@ type Language
     = English
     | Swedish
     | French
+
+
+directionToString : Direction -> String
+directionToString dir =
+    case dir of
+        North ->
+            "N"
+
+        South ->
+            "S"
+
+        West ->
+            "W"
+
+        East ->
+            "E"
 
 
 turnLeft : Direction -> Direction
