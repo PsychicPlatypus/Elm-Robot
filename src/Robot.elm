@@ -4,7 +4,7 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (style, type_, value)
 import Html.Events exposing (onClick, onInput)
-import RobotFuncs exposing (..)
+import RobotFuncs exposing (Model)
 import String exposing (toInt)
 
 
@@ -22,18 +22,6 @@ turnToInt str =
     str
         |> toInt
         |> Maybe.withDefault 0
-
-
-
--- Model
-
-
-type alias Model =
-    { x : Int
-    , y : Int
-    , commands : String
-    , facing : String
-    }
 
 
 init : Model

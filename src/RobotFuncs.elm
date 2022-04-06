@@ -1,7 +1,19 @@
-module RobotFuncs exposing (execute_orders, fromJust)
+module RobotFuncs exposing (Model, execute_orders, fromJust)
 
 import List exposing (drop, head, take)
 import String exposing (left, length, right, slice, toUpper)
+
+
+
+-- Model
+
+
+type alias Model =
+    { x : Int
+    , y : Int
+    , commands : String
+    , facing : String
+    }
 
 
 fromJust : Maybe a -> a
