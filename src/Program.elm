@@ -64,7 +64,7 @@ update msg model =
         ButtonPressed ->
             let
                 func =
-                    Robot.execute_orders model.x model.y model.commands "English" model.facing
+                    Robot.executeOrders model.x model.y model.commands "English" model.facing
             in
             { model | x = func.x, y = func.y, facing = func.dir }
 

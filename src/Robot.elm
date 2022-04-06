@@ -1,4 +1,4 @@
-module Robot exposing (Model, execute_orders, fromJust)
+module Robot exposing (Model, executeOrders, fromJust)
 
 import List exposing (head)
 import String exposing (left, length, right, slice, toUpper)
@@ -26,8 +26,8 @@ fromJust x =
             Debug.todo "error: fromJust Nothing"
 
 
-turn_left : String -> String
-turn_left currentDir =
+turnLeft : String -> String
+turnLeft currentDir =
     case currentDir of
         "N" ->
             "W"
@@ -45,8 +45,8 @@ turn_left currentDir =
             invalidState
 
 
-turn_right : String -> String
-turn_right currentDir =
+turnRight : String -> String
+turnRight currentDir =
     case currentDir of
         "N" ->
             "E"
@@ -80,8 +80,8 @@ facing dir =
             [ "W", "N", "E", "S" ]
 
 
-execute_orders : Int -> Int -> String -> String -> String -> { x : Int, y : Int, dir : String }
-execute_orders x y commands lang dir =
+executeOrders : Int -> Int -> String -> String -> String -> { x : Int, y : Int, dir : String }
+executeOrders x y commands lang dir =
     let
         moves =
             case lang of
@@ -120,22 +120,22 @@ execute_orders x y commands lang dir =
 
     else if first_move == fw then
         if dir == "N" then
-            execute_orders x (y - 1) rest lang dir
+            executeOrders x (y - 1) rest lang dir
 
         else if dir == "E" then
-            execute_orders (x + 1) y rest lang dir
+            executeOrders (x + 1) y rest lang dir
 
         else if dir == "S" then
-            execute_orders x (y + 1) rest lang dir
+            executeOrders x (y + 1) rest lang dir
 
         else
-            execute_orders (x - 1) y rest lang dir
+            executeOrders (x - 1) y rest lang dir
 
     else if first_move == lft then
-        execute_orders x y rest lang (turn_left dir)
+        executeOrders x y rest lang (turnLeft dir)
 
     else if first_move == rght then
-        execute_orders x y rest lang (turn_right dir)
+        executeOrders x y rest lang (turnRight dir)
 
     else
         Debug.todo "branch '_' not implemented"
