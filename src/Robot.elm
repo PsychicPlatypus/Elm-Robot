@@ -1,99 +1,165 @@
-module Robot exposing (..)
-
-import Browser
-import Html exposing (..)
-import Html.Attributes exposing (style, type_, value)
-import Html.Events exposing (onClick, onInput)
-import RobotFuncs exposing (..)
-import String exposing (toInt)
-
-
-main : Program () Model Msg
-main =
-    Browser.sandbox
-        { init = init
-        , view = view
-        , update = update
-        }
-
-
-turnToInt : String -> Int
-turnToInt str =
-    str
-        |> toInt
-        |> Maybe.withDefault 0
-
-
-
--- Model
+module Robot exposing (Language(..), Model, directionToString, init, run)
 
 
 type alias Model =
     { x : Int
     , y : Int
     , commands : String
-    , facing : String
+    , facing : Direction
+    , language : Language
     }
 
 
 init : Model
 init =
-    { x = 0
-    , y = 0
-    , commands = ""
-    , facing = "N"
-    }
+    { x = 1, y = 2, commands = "HGHGGHGHG", facing = North, language = Swedish }
 
 
-
--- Subscriptions
--- Update
-
-
-type Msg
-    = SetX String
-    | SetY String
-    | SetCommands String
-    | ButtonPressed
+type Direction
+    = North
+    | South
+    | East
+    | West
 
 
-
--- Run
-
-
-update : Msg -> Model -> Model
-update msg model =
-    case msg of
-        SetX num ->
-            { model | x = turnToInt num }
-
-        SetY num ->
-            { model | y = turnToInt num }
-
-        SetCommands cmds ->
-            { model | commands = cmds }
-
-        ButtonPressed ->
-            let
-                func =
-                    RobotFuncs.execute_orders model.x model.y model.commands "English" model.facing
-            in
-            { model | x = func.x, y = func.y, facing = func.dir }
+type Command
+    = InvalidMove
+    | Left
+    | Right
+    | Forward
 
 
+type Language
+    = English
+    | Swedish
+    | French
 
--- Run ->
--- View
+
+directionToString : Direction -> String
+directionToString dir =
+    case dir of
+        North ->
+            "N"
+
+        South ->
+            "S"
+
+        West ->
+            "W"
+
+        East ->
+            "E"
 
 
-view : Model -> Html Msg
-view model =
-    div [ style "display" "flex", style "flex-direction" "column", style "justify-content" "center", style "align-items" "center" ]
-        [ h1 [] [ text "Robot" ]
-        , div []
-            [ input [ type_ "Text", onInput SetX, value (Debug.toString model.x) ] []
-            , input [ type_ "Text", onInput SetY, value (Debug.toString model.y) ] []
-            , input [ type_ "Text", onInput SetCommands, value model.commands ] []
-            ]
-        , button [ onClick ButtonPressed ] [ text "Run" ]
-        ]
+turnLeft : Direction -> Direction
+turnLeft currentDir =
+    case currentDir of
+        North ->
+            West
+
+        West ->
+            South
+
+        South ->
+            East
+
+        East ->
+            North
+
+
+turnRight : Direction -> Direction
+turnRight currentDir =
+    case currentDir of
+        North ->
+            East
+
+        East ->
+            South
+
+        South ->
+            West
+
+        West ->
+            North
+
+
+toCommands : Language -> Char -> Command
+toCommands language s =
+    case language of
+        English ->
+            case s of
+                'R' ->
+                    Right
+
+                'L' ->
+                    Left
+
+                'F' ->
+                    Forward
+
+                _ ->
+                    InvalidMove
+
+        Swedish ->
+            case s of
+                'H' ->
+                    Right
+
+                'V' ->
+                    Left
+
+                'G' ->
+                    Forward
+
+                _ ->
+                    InvalidMove
+
+        French ->
+            case s of
+                'D' ->
+                    Right
+
+                'G' ->
+                    Left
+
+                'T' ->
+                    Forward
+
+                _ ->
+                    InvalidMove
+
+
+runCommand : Command -> Model -> Model
+runCommand cmd m =
+    case cmd of
+        InvalidMove ->
+            m
+
+        Left ->
+            { m | facing = turnLeft m.facing }
+
+        Right ->
+            { m | facing = turnRight m.facing }
+
+        Forward ->
+            case m.facing of
+                North ->
+                    { m | y = m.y - 1 }
+
+                South ->
+                    { m | y = m.y + 1 }
+
+                West ->
+                    { m | x = m.x - 1 }
+
+                East ->
+                    { m | x = m.x + 1 }
+
+
+run : Model -> Model
+run model =
+    model.commands
+        |> String.toList
+        |> List.map Char.toUpper
+        |> List.map (toCommands model.language)
+        |> List.foldl runCommand model
