@@ -1,4 +1,4 @@
-module RobotFuncs exposing (Model, execute_orders, fromJust)
+module Robot exposing (Model, execute_orders, fromJust)
 
 import List exposing (drop, head, take)
 import String exposing (left, length, right, slice, toUpper)

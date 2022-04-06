@@ -4,7 +4,7 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (style, type_, value)
 import Html.Events exposing (onClick, onInput)
-import RobotFuncs exposing (Model)
+import Robot exposing (Model)
 import String exposing (toInt)
 
 
@@ -64,7 +64,7 @@ update msg model =
         ButtonPressed ->
             let
                 func =
-                    RobotFuncs.execute_orders model.x model.y model.commands "English" model.facing
+                    Robot.execute_orders model.x model.y model.commands "English" model.facing
             in
             { model | x = func.x, y = func.y, facing = func.dir }
 
