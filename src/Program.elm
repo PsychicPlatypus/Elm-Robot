@@ -11,7 +11,7 @@ import String exposing (toInt)
 main : Program () Model Msg
 main =
     Browser.sandbox
-        { init = init
+        { init = Robot.init
         , view = view
         , update = update
         }
@@ -22,15 +22,6 @@ turnToInt str =
     str
         |> toInt
         |> Maybe.withDefault 0
-
-
-init : Model
-init =
-    { x = 0
-    , y = 0
-    , commands = ""
-    , facing = "N"
-    }
 
 
 

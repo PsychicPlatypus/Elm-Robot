@@ -1,19 +1,26 @@
-module Robot exposing (Model, executeOrders, fromJust)
+module Robot exposing (Model, executeOrders, fromJust, init)
 
-import List exposing (head)
 import String exposing (left, length, right, slice, toUpper)
-
-
-
--- Model
 
 
 type alias Model =
     { x : Int
     , y : Int
     , commands : String
-    , facing : String
+    , facing : Direction
     }
+
+
+init : Model
+init =
+    { x = 0, y = 0, commands = "", facing = North }
+
+
+type Direction
+    = North
+    | South
+    | East
+    | West
 
 
 fromJust : Maybe a -> a
@@ -26,61 +33,39 @@ fromJust x =
             Debug.todo "error: fromJust Nothing"
 
 
-turnLeft : String -> String
+turnLeft : Direction -> Direction
 turnLeft currentDir =
     case currentDir of
-        "N" ->
-            "W"
+        North ->
+            West
 
-        "W" ->
-            "S"
+        West ->
+            South
 
-        "S" ->
-            "E"
+        South ->
+            East
 
-        "E" ->
-            "N"
-
-        invalidState ->
-            invalidState
+        East ->
+            North
 
 
-turnRight : String -> String
+turnRight : Direction -> Direction
 turnRight currentDir =
     case currentDir of
-        "N" ->
-            "E"
+        North ->
+            East
 
-        "E" ->
-            "S"
+        East ->
+            South
 
-        "S" ->
-            "W"
+        South ->
+            West
 
-        "W" ->
-            "N"
-
-        invalidState ->
-            invalidState
+        West ->
+            North
 
 
-facing : String -> List String
-facing dir =
-    case dir of
-        "N" ->
-            [ "N", "E", "S", "W" ]
-
-        "E" ->
-            [ "E", "S", "W", "N" ]
-
-        "S" ->
-            [ "S", "W", "N", "E" ]
-
-        _ ->
-            [ "W", "N", "E", "S" ]
-
-
-executeOrders : Int -> Int -> String -> String -> String -> { x : Int, y : Int, dir : String }
+executeOrders : Int -> Int -> String -> String -> Direction -> { x : Int, y : Int, dir : Direction }
 executeOrders x y commands lang dir =
     let
         moves =
@@ -100,9 +85,6 @@ executeOrders x y commands lang dir =
         fw =
             right 1 moves
 
-        directions =
-            facing dir
-
         rght =
             left 1 moves
 
@@ -116,16 +98,16 @@ executeOrders x y commands lang dir =
             slice 1 (length commands) (toUpper commands)
     in
     if first_move == "" then
-        { x = x, y = y, dir = fromJust (head directions) }
+        { x = x, y = y, dir = dir }
 
     else if first_move == fw then
-        if dir == "N" then
+        if dir == North then
             executeOrders x (y - 1) rest lang dir
 
-        else if dir == "E" then
+        else if dir == East then
             executeOrders (x + 1) y rest lang dir
 
-        else if dir == "S" then
+        else if dir == South then
             executeOrders x (y + 1) rest lang dir
 
         else
