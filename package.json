@@ -1,0 +1,12 @@
+{
+  "name": "Elm-Robot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:PsychicPlatypus/Elm-Robot.git",
+  "author": "Morgan Persson <morgan+github@pinmeto.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "elm": "^0.19.1-5",
+    "elm-format": "^0.8.5"
+  }
+}
