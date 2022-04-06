@@ -1,6 +1,6 @@
 module Robot exposing (Model, execute_orders, fromJust)
 
-import List exposing (drop, head, take)
+import List exposing (head)
 import String exposing (left, length, right, slice, toUpper)
 
 
@@ -26,34 +26,42 @@ fromJust x =
             Debug.todo "error: fromJust Nothing"
 
 
-turn_left : List String -> List String
-turn_left dir_list =
-    let
-        x =
-            take 1 dir_list
+turn_left : String -> String
+turn_left currentDir =
+    case currentDir of
+        "N" ->
+            "W"
 
-        y =
-            drop 1 dir_list
+        "W" ->
+            "S"
 
-        return_list =
-            y ++ x
-    in
-    return_list
+        "S" ->
+            "E"
+
+        "E" ->
+            "N"
+
+        invalidState ->
+            invalidState
 
 
-turn_right : List String -> List String
-turn_right dir_list =
-    let
-        x =
-            take 3 dir_list
+turn_right : String -> String
+turn_right currentDir =
+    case currentDir of
+        "N" ->
+            "E"
 
-        y =
-            drop 3 dir_list
+        "E" ->
+            "S"
 
-        return_list =
-            y ++ x
-    in
-    return_list
+        "S" ->
+            "W"
+
+        "W" ->
+            "N"
+
+        invalidState ->
+            invalidState
 
 
 facing : String -> List String
@@ -124,10 +132,10 @@ execute_orders x y commands lang dir =
             execute_orders (x - 1) y rest lang dir
 
     else if first_move == lft then
-        execute_orders x y rest lang (fromJust (head (turn_left directions)))
+        execute_orders x y rest lang (turn_left dir)
 
     else if first_move == rght then
-        execute_orders x y rest lang (fromJust (head (turn_right directions)))
+        execute_orders x y rest lang (turn_right dir)
 
     else
         Debug.todo "branch '_' not implemented"
