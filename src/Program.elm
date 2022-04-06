@@ -5,7 +5,6 @@ import Html exposing (..)
 import Html.Attributes exposing (style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Robot exposing (Model)
-import String exposing (toInt)
 
 
 main : Program () Model Msg
@@ -17,10 +16,10 @@ main =
         }
 
 
-turnToInt : String -> Int
-turnToInt str =
+toInt : String -> Int
+toInt str =
     str
-        |> toInt
+        |> String.toInt
         |> Maybe.withDefault 0
 
 
@@ -44,20 +43,17 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         SetX num ->
-            { model | x = turnToInt num }
+            { model | x = toInt num }
 
         SetY num ->
-            { model | y = turnToInt num }
+            { model | y = toInt num }
 
-        SetCommands cmds ->
-            { model | commands = cmds }
+        SetCommands commands ->
+            { model | commands = commands }
 
         ButtonPressed ->
-            let
-                func =
-                    Robot.executeOrders model.x model.y model.commands "English" model.facing
-            in
-            { model | x = func.x, y = func.y, facing = func.dir }
+            Robot.run model
+                |> Debug.log "new status"
 
 
 
@@ -70,8 +66,8 @@ view model =
     div [ style "display" "flex", style "flex-direction" "column", style "justify-content" "center", style "align-items" "center" ]
         [ h1 [] [ text "Robot" ]
         , div []
-            [ input [ type_ "Text", onInput SetX, value (Debug.toString model.x) ] []
-            , input [ type_ "Text", onInput SetY, value (Debug.toString model.y) ] []
+            [ input [ type_ "Text", onInput SetX, value (String.fromInt model.x) ] []
+            , input [ type_ "Text", onInput SetY, value (String.fromInt model.y) ] []
             , input [ type_ "Text", onInput SetCommands, value model.commands ] []
             ]
         , button [ onClick ButtonPressed ] [ text "Run" ]

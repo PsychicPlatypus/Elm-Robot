@@ -1,6 +1,4 @@
-module Robot exposing (Model, executeOrders, fromJust, init)
-
-import String exposing (left, length, right, slice, toUpper)
+module Robot exposing (Language(..), Model, init, run)
 
 
 type alias Model =
@@ -8,12 +6,13 @@ type alias Model =
     , y : Int
     , commands : String
     , facing : Direction
+    , language : Language
     }
 
 
 init : Model
 init =
-    { x = 0, y = 0, commands = "", facing = North }
+    { x = 1, y = 2, commands = "HGHGGHGHG", facing = North, language = Swedish }
 
 
 type Direction
@@ -23,14 +22,17 @@ type Direction
     | West
 
 
-fromJust : Maybe a -> a
-fromJust x =
-    case x of
-        Just y ->
-            y
+type Command
+    = InvalidMove
+    | Left
+    | Right
+    | Forward
 
-        Nothing ->
-            Debug.todo "error: fromJust Nothing"
+
+type Language
+    = English
+    | Swedish
+    | French
 
 
 turnLeft : Direction -> Direction
@@ -65,59 +67,83 @@ turnRight currentDir =
             North
 
 
-executeOrders : Int -> Int -> String -> String -> Direction -> { x : Int, y : Int, dir : Direction }
-executeOrders x y commands lang dir =
-    let
-        moves =
-            case lang of
-                "English" ->
-                    "RLF"
+toCommands : Language -> Char -> Command
+toCommands language s =
+    case language of
+        English ->
+            case s of
+                'R' ->
+                    Right
 
-                "French" ->
-                    "HVG"
+                'L' ->
+                    Left
 
-                "Swedish" ->
-                    "DGT"
+                'F' ->
+                    Forward
 
                 _ ->
-                    Debug.todo "Add more Languages"
+                    InvalidMove
 
-        fw =
-            right 1 moves
+        Swedish ->
+            case s of
+                'H' ->
+                    Right
 
-        rght =
-            left 1 moves
+                'V' ->
+                    Left
 
-        lft =
-            slice 1 2 moves
+                'G' ->
+                    Forward
 
-        first_move =
-            left 1 (toUpper commands)
+                _ ->
+                    InvalidMove
 
-        rest =
-            slice 1 (length commands) (toUpper commands)
-    in
-    if first_move == "" then
-        { x = x, y = y, dir = dir }
+        French ->
+            case s of
+                'D' ->
+                    Right
 
-    else if first_move == fw then
-        if dir == North then
-            executeOrders x (y - 1) rest lang dir
+                'G' ->
+                    Left
 
-        else if dir == East then
-            executeOrders (x + 1) y rest lang dir
+                'T' ->
+                    Forward
 
-        else if dir == South then
-            executeOrders x (y + 1) rest lang dir
+                _ ->
+                    InvalidMove
 
-        else
-            executeOrders (x - 1) y rest lang dir
 
-    else if first_move == lft then
-        executeOrders x y rest lang (turnLeft dir)
+runCommand : Command -> Model -> Model
+runCommand cmd m =
+    case cmd of
+        InvalidMove ->
+            m
 
-    else if first_move == rght then
-        executeOrders x y rest lang (turnRight dir)
+        Left ->
+            { m | facing = turnLeft m.facing }
 
-    else
-        Debug.todo "branch '_' not implemented"
+        Right ->
+            { m | facing = turnRight m.facing }
+
+        Forward ->
+            case m.facing of
+                North ->
+                    { m | y = m.y - 1 }
+
+                South ->
+                    { m | y = m.y + 1 }
+
+                West ->
+                    { m | x = m.x - 1 }
+
+                East ->
+                    { m | x = m.x + 1 }
+
+
+run : Model -> Model
+run model =
+    model.commands
+        |> String.toList
+        |> List.map Char.toUpper
+        |> List.map (toCommands model.language)
+        |> List.foldl runCommand model
