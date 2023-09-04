@@ -5,6 +5,7 @@ import Html exposing (..)
 import Html.Attributes exposing (style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Robot exposing (Model)
+import StyleGen exposing (appStyles)
 
 
 main : Program () Model Msg
@@ -63,12 +64,14 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div [ style "display" "flex", style "flex-direction" "column", style "justify-content" "center", style "align-items" "center" ]
+    div appStyles
         [ h1 [] [ text "Robot" ]
-        , div []
+        , div [ style "display" "flex" ]
             [ input [ type_ "Text", onInput SetX, value (String.fromInt model.x) ] []
             , input [ type_ "Text", onInput SetY, value (String.fromInt model.y) ] []
+            , br [] []
             , input [ type_ "Text", value (Robot.directionToString model.facing) ] []
+            , br [] []
             , input [ type_ "Text", onInput SetCommands, value model.commands ] []
             ]
         , button [ onClick ButtonPressed ] [ text "Run" ]

@@ -12,7 +12,7 @@ type alias Model =
 
 init : Model
 init =
-    { x = 1, y = 2, commands = "HGHGGHGHG", facing = North, language = Swedish }
+    { x = 0, y = 0, commands = "", facing = North, language = Swedish }
 
 
 type Direction
